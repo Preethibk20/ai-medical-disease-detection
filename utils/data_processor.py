@@ -6,25 +6,6 @@ from sklearn.impute import SimpleImputer
 import joblib
 import os
 
-# Handle optional dependencies gracefully
-try:
-    import cv2
-    CV2_AVAILABLE = True
-except ImportError:
-    CV2_AVAILABLE = False
-
-try:
-    import pydicom
-    PYDICOM_AVAILABLE = True
-except ImportError:
-    PYDICOM_AVAILABLE = False
-
-try:
-    import nibabel as nib
-    NIBABEL_AVAILABLE = True
-except ImportError:
-    NIBABEL_AVAILABLE = False
-
 class MedicalDataProcessor:
     def __init__(self):
         self.image_scaler = None
@@ -33,55 +14,17 @@ class MedicalDataProcessor:
         self.imputer = SimpleImputer(strategy='mean')
         
     def process_medical_image(self, image_path, target_size=(224, 224)):
-        """Process medical images (X-ray, CT, MRI)"""
+        """Process medical images using PIL only"""
         try:
-            # Handle different image formats
-            if image_path.endswith('.dcm'):
-                # DICOM file
-                if PYDICOM_AVAILABLE:
-                    dcm = pydicom.dcmread(image_path)
-                    image = dcm.pixel_array
-                else:
-                    print("PyDICOM not available - cannot process DICOM files")
-                    return None
-            elif image_path.endswith('.nii') or image_path.endswith('.nii.gz'):
-                # NIfTI file
-                if NIBABEL_AVAILABLE:
-                    nii = nib.load(image_path)
-                    image = nii.get_fdata()
-                    # Take middle slice for 3D volumes
-                    if len(image.shape) == 3:
-                        image = image[:, :, image.shape[2]//2]
-                else:
-                    print("Nibabel not available - cannot process NIfTI files")
-                    return None
-            else:
-                # Regular image file
-                if CV2_AVAILABLE:
-                    image = cv2.imread(image_path)
-                    if image is not None:
-                        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                    else:
-                        image = np.array(Image.open(image_path).convert('L'))
-                else:
-                    # Fallback to PIL only
-                    image = np.array(Image.open(image_path).convert('L'))
+            # Use PIL for all image processing
+            image = Image.open(image_path).convert('L')  # Convert to grayscale
+            image = image.resize(target_size)
+            image = np.array(image)
             
-            # Normalize and resize
-            if image is not None:
-                if CV2_AVAILABLE:
-                    image = cv2.resize(image, target_size)
-                else:
-                    # Fallback to PIL resize
-                    pil_image = Image.fromarray(image)
-                    pil_image = pil_image.resize(target_size)
-                    image = np.array(pil_image)
-                
-                image = (image - image.min()) / (image.max() - image.min())
-                image = image.astype(np.float32)
-                return image
-            else:
-                return None
+            # Normalize
+            image = (image - image.min()) / (image.max() - image.min())
+            image = image.astype(np.float32)
+            return image
                 
         except Exception as e:
             print(f"Error processing image {image_path}: {e}")

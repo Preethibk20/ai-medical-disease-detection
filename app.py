@@ -10,14 +10,6 @@ import base64
 import os
 import sys
 
-# Handle optional dependencies gracefully
-try:
-    import cv2
-    CV2_AVAILABLE = True
-except ImportError:
-    CV2_AVAILABLE = False
-    st.warning("OpenCV not available - image processing features will be limited")
-
 # Add utils and models to path
 sys.path.append('utils')
 sys.path.append('models')
