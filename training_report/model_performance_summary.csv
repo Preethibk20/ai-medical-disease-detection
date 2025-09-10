@@ -1,0 +1,6 @@
+Disease,Accuracy,AUC,Precision,Recall,F1-Score
+Diabetes,0.956,0.983,0.955,0.956,0.955
+Cardiovascular,0.953,0.962,0.951,0.953,0.950
+Cancer,0.934,0.961,0.938,0.934,0.922
+Kidney Disease,0.944,0.980,0.945,0.944,0.941
+Liver Disease,0.984,0.967,0.984,0.984,0.981

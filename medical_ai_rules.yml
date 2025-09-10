@@ -1,0 +1,187 @@
+# Prometheus alerting rules for AI Medical Disease Detection System
+groups:
+  - name: medical_ai_alerts
+    rules:
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+      # Disk space low
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is above 90% on {{ $labels.instance }}"
+
+      # Application down
+      - alert: ApplicationDown
+        expr: up{job="medical-ai-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Medical AI application is down"
+          description: "The medical AI application has been down for more than 1 minute"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time"
+          description: "95th percentile response time is above 2 seconds"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate"
+          description: "Error rate is above 5% for more than 5 minutes"
+
+      # Model loading failure
+      - alert: ModelLoadingFailure
+        expr: medical_ai_model_loading_failures_total > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model loading failure"
+          description: "Failed to load AI model: {{ $labels.model_name }}"
+
+      # Prediction failure
+      - alert: PredictionFailure
+        expr: rate(medical_ai_prediction_failures_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High prediction failure rate"
+          description: "Prediction failure rate is above 0.1 per second"
+
+      # Database connection failure
+      - alert: DatabaseConnectionFailure
+        expr: medical_ai_database_connection_failures_total > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection failure"
+          description: "Failed to connect to database"
+
+      # File upload failure
+      - alert: FileUploadFailure
+        expr: rate(medical_ai_file_upload_failures_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High file upload failure rate"
+          description: "File upload failure rate is above 0.05 per second"
+
+      # Redis connection failure
+      - alert: RedisConnectionFailure
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis connection failure"
+          description: "Redis is not responding"
+
+      # Nginx upstream failure
+      - alert: NginxUpstreamFailure
+        expr: nginx_upstream_requests_total{upstream_status=~"5.."} > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Nginx upstream failure"
+          description: "Nginx upstream server is returning 5xx errors"
+
+  - name: medical_ai_performance
+    rules:
+      # Slow predictions
+      - alert: SlowPredictions
+        expr: histogram_quantile(0.95, rate(medical_ai_prediction_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow predictions"
+          description: "95th percentile prediction time is above 10 seconds"
+
+      # High concurrent users
+      - alert: HighConcurrentUsers
+        expr: medical_ai_concurrent_users > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High concurrent users"
+          description: "Number of concurrent users is above 100"
+
+      # Queue backlog
+      - alert: QueueBacklog
+        expr: medical_ai_queue_size > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Queue backlog"
+          description: "Processing queue has more than 50 items"
+
+  - name: medical_ai_security
+    rules:
+      # High failed login attempts
+      - alert: HighFailedLogins
+        expr: rate(medical_ai_failed_logins_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High failed login attempts"
+          description: "Failed login rate is above 0.1 per second"
+
+      # Suspicious file uploads
+      - alert: SuspiciousFileUploads
+        expr: rate(medical_ai_suspicious_uploads_total[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Suspicious file uploads"
+          description: "Suspicious file upload rate is above 0.01 per second"
+
+      # Rate limit exceeded
+      - alert: RateLimitExceeded
+        expr: rate(medical_ai_rate_limit_exceeded_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limit exceeded"
+          description: "Rate limit exceeded rate is above 0.05 per second"

@@ -1,0 +1,53 @@
+AI Medical Disease Detection - Training Results
+==================================================
+
+Diabetes:
+  Accuracy: 0.956
+  AUC: 0.983
+  Precision: 0.955
+  Recall: 0.956
+  F1-Score: 0.955
+  Confusion Matrix:
+[[657  11]
+ [ 24 108]]
+
+Cardiovascular:
+  Accuracy: 0.953
+  AUC: 0.962
+  Precision: 0.951
+  Recall: 0.953
+  F1-Score: 0.950
+  Confusion Matrix:
+[[689   9]
+ [ 29  73]]
+
+Cancer:
+  Accuracy: 0.934
+  AUC: 0.961
+  Precision: 0.938
+  Recall: 0.934
+  F1-Score: 0.922
+  Confusion Matrix:
+[[704   0]
+ [ 53  43]]
+
+Kidney Disease:
+  Accuracy: 0.944
+  AUC: 0.980
+  Precision: 0.945
+  Recall: 0.944
+  F1-Score: 0.941
+  Confusion Matrix:
+[[630   4]
+ [ 41 125]]
+
+Liver Disease:
+  Accuracy: 0.984
+  AUC: 0.967
+  Precision: 0.984
+  Recall: 0.984
+  F1-Score: 0.981
+  Confusion Matrix:
+[[773   0]
+ [ 13  14]]
+
