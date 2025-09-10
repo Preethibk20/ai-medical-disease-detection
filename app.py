@@ -4,12 +4,19 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import cv2
 from PIL import Image
 import io
 import base64
 import os
 import sys
+
+# Handle optional dependencies gracefully
+try:
+    import cv2
+    CV2_AVAILABLE = True
+except ImportError:
+    CV2_AVAILABLE = False
+    st.warning("OpenCV not available - image processing features will be limited")
 
 # Add utils and models to path
 sys.path.append('utils')
